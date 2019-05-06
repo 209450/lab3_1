@@ -68,6 +68,13 @@ public class BookKeeperTest {
     @Test public void givenInvoiceWithOneElementIssuanceReturnsElementValueWithTax() {
         invoiceRequest.add(defaultRequestItem);
 
-        assertThat(bookKeeper.issuance(invoiceRequest,taxPolicy).getGros().toString(), is("110,00 €"));
+        assertThat(bookKeeper.issuance(invoiceRequest, taxPolicy).getGros().toString(), is("110,00 €"));
     }
+
+    @Test public void givenInvoiceWithOneElementIssuanceReturnsElementValue() {
+        invoiceRequest.add(defaultRequestItem);
+
+        assertThat(bookKeeper.issuance(invoiceRequest, taxPolicy).getNet().toString(), is("100,00 €"));
+    }
+
 }
