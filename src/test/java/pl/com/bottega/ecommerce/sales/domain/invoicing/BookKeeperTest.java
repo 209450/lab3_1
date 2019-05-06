@@ -77,4 +77,8 @@ public class BookKeeperTest {
         assertThat(bookKeeper.issuance(invoiceRequest, taxPolicy).getNet().toString(), is("100,00 €"));
     }
 
+    @Test public void givenInvoiceWithoutElementIssuanceMethodNotInvokeCalculateTaxMethod() {
+        bookKeeper.issuance(invoiceRequest,taxPolicy);
+        Mockito.verify(taxPolicy, Mockito.times(0)).calculateTax(any(),any());
+    }
 }
