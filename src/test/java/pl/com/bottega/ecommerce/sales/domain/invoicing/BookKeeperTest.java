@@ -41,6 +41,7 @@ public class BookKeeperTest {
 
         tax = new Tax(new Money(new BigDecimal(10), Money.DEFAULT_CURRENCY), "Podatek");
         taxPolicy = Mockito.mock(TaxPolicy.class);
+        Mockito.when(taxPolicy.calculateTax(any(), any())).thenReturn(tax);
 
         defaultMoney = new Money(new BigDecimal(100), Money.DEFAULT_CURRENCY);
         defaultProdutData = new ProductData(Id.generate(), defaultMoney, "jojo", ProductType.FOOD, new Date());
@@ -50,10 +51,7 @@ public class BookKeeperTest {
     @Test public void givenInvoiceWithOneElementReturnInvoiceWithOneElement() {
         invoiceRequest.add(defaultRequestItem);
 
-        Mockito.when(taxPolicy.calculateTax(any(), any())).thenReturn(tax);
-
         assertThat(bookKeeper.issuance(invoiceRequest, taxPolicy).getItems().size(), is(1));
-
     }
 
     @Test public void givenInvoiceWithTwoElementsInvokeCalculateTaxMethodTwoTimes() {
@@ -63,9 +61,13 @@ public class BookKeeperTest {
         invoiceRequest.add(requestItem);
         invoiceRequest.add(defaultRequestItem);
 
-        Mockito.when(taxPolicy.calculateTax(any(), any())).thenReturn(tax);
+        bookKeeper.issuance(invoiceRequest, taxPolicy);
+        Mockito.verify(taxPolicy, Mockito.times(2)).calculateTax(any(), any());
+    }
 
-        bookKeeper.issuance(invoiceRequest,taxPolicy);
-        Mockito.verify(taxPolicy,Mockito.times(2)).calculateTax(any(), any());
+    @Test public void givenInvoiceWithOneElementIssuanceReturnsElementValueWithTax() {
+        invoiceRequest.add(defaultRequestItem);
+
+        assertThat(bookKeeper.issuance(invoiceRequest,taxPolicy).getGros().toString(), is("110,00 €"));
     }
 }
