@@ -16,6 +16,7 @@ import java.util.Date;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
 
 public class BookKeeperTest {
 
@@ -26,6 +27,9 @@ public class BookKeeperTest {
     private ProductData productData2;
     private Tax tax;
     private Id id;
+    private Money defaultMoney;
+    private ProductData defaultProdutData;
+    private RequestItem defaultRequestItem;
 
     private TaxPolicy taxPolicy;
 
@@ -37,17 +41,31 @@ public class BookKeeperTest {
 
         tax = new Tax(new Money(new BigDecimal(10), Money.DEFAULT_CURRENCY), "Podatek");
         taxPolicy = Mockito.mock(TaxPolicy.class);
+
+        defaultMoney = new Money(new BigDecimal(100), Money.DEFAULT_CURRENCY);
+        defaultProdutData = new ProductData(Id.generate(), defaultMoney, "jojo", ProductType.FOOD, new Date());
+        defaultRequestItem = new RequestItem(defaultProdutData, 1, defaultMoney);
     }
 
     @Test public void givenInvoiceWithOneElementReturnInvoiceWithOneElement() {
-        Money money = new Money(new BigDecimal(100), Money.DEFAULT_CURRENCY);
-        ProductData productData = new ProductData(Id.generate(), money, "jojo", ProductType.FOOD, new Date());
-        RequestItem requestItem = new RequestItem(productData, 1, money);
-        invoiceRequest.add(requestItem);
+        invoiceRequest.add(defaultRequestItem);
 
         Mockito.when(taxPolicy.calculateTax(any(), any())).thenReturn(tax);
 
         assertThat(bookKeeper.issuance(invoiceRequest, taxPolicy).getItems().size(), is(1));
 
+    }
+
+    @Test public void givenInvoiceWithTwoElementsInvokeCalculateTaxMethodTwoTimes() {
+        Money money = new Money(new BigDecimal(10), Money.DEFAULT_CURRENCY);
+        ProductData productData = new ProductData(Id.generate(), money, "jojo", ProductType.FOOD, new Date());
+        RequestItem requestItem = new RequestItem(productData, 1, money);
+        invoiceRequest.add(requestItem);
+        invoiceRequest.add(defaultRequestItem);
+
+        Mockito.when(taxPolicy.calculateTax(any(), any())).thenReturn(tax);
+
+        bookKeeper.issuance(invoiceRequest,taxPolicy);
+        Mockito.verify(taxPolicy,Mockito.times(2)).calculateTax(any(), any());
     }
 }
