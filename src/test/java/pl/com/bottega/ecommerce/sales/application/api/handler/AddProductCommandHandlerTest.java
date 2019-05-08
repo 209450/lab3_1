@@ -79,5 +79,19 @@ public class AddProductCommandHandlerTest {
         Mockito.verify(suggestionService,times(0)).suggestEquivalent(any(),any());
     }
 
+    @Test public void notGivenProductThenClientRepositoryLoadMethodShouldBeCastOnce() {
+        product.markAsRemoved();
+        Mockito.when(suggestionService.suggestEquivalent(any(), any())).thenReturn(new Product(Id.generate(),product.getPrice(),product.getName(),product.getProductType()));
+        addProductCommandHandler.handle(addProductCommand);
+        Mockito.verify(clientRepository,times(1)).load(any());
+    }
+
+    @Test public void notGivenProductThenSuggestionServiceSuggestEquivalentMethodShouldBeCastOnce() {
+        product.markAsRemoved();
+        Mockito.when(suggestionService.suggestEquivalent(any(), any())).thenReturn(new Product(Id.generate(),product.getPrice(),product.getName(),product.getProductType()));
+        addProductCommandHandler.handle(addProductCommand);
+        Mockito.verify(suggestionService,times(1)).suggestEquivalent(any(),any());
+    }
+
 
 }
