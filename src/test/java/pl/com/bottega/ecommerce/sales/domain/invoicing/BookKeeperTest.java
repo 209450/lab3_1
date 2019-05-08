@@ -71,7 +71,6 @@ public class BookKeeperTest {
         assertThat(bookKeeper.issuance(invoiceRequest, taxPolicy).getGros().toString(), is("110,00 €"));
     }
 
-
     @Test public void givenInvoiceWithOneElementIssuanceReturnsElementValue() {
         invoiceRequest.add(defaultRequestItem);
 
@@ -79,8 +78,8 @@ public class BookKeeperTest {
     }
 
     @Test public void givenInvoiceWithoutElementIssuanceMethodNotInvokeCalculateTaxMethod() {
-        bookKeeper.issuance(invoiceRequest,taxPolicy);
-        Mockito.verify(taxPolicy, Mockito.times(0)).calculateTax(any(),any());
+        bookKeeper.issuance(invoiceRequest, taxPolicy);
+        Mockito.verify(taxPolicy, Mockito.times(0)).calculateTax(any(), any());
     }
 
     @Test public void givenInvoiceWithTwoElementsIssuanceReturnsElementValueSum() {

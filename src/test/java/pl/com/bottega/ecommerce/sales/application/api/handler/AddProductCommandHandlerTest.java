@@ -71,27 +71,28 @@ public class AddProductCommandHandlerTest {
 
     @Test public void givenProductThenClientRepositoryLoadMethodShouldNotBeCast() {
         addProductCommandHandler.handle(addProductCommand);
-        Mockito.verify(clientRepository,times(0)).load(any());
+        Mockito.verify(clientRepository, times(0)).load(any());
     }
 
     @Test public void givenProductThenSuggestionServiceSuggestEquivalentShouldNotBeCast() {
         addProductCommandHandler.handle(addProductCommand);
-        Mockito.verify(suggestionService,times(0)).suggestEquivalent(any(),any());
+        Mockito.verify(suggestionService, times(0)).suggestEquivalent(any(), any());
     }
 
     @Test public void notGivenProductThenClientRepositoryLoadMethodShouldBeCastOnce() {
         product.markAsRemoved();
-        Mockito.when(suggestionService.suggestEquivalent(any(), any())).thenReturn(new Product(Id.generate(),product.getPrice(),product.getName(),product.getProductType()));
+        Mockito.when(suggestionService.suggestEquivalent(any(), any()))
+               .thenReturn(new Product(Id.generate(), product.getPrice(), product.getName(), product.getProductType()));
         addProductCommandHandler.handle(addProductCommand);
-        Mockito.verify(clientRepository,times(1)).load(any());
+        Mockito.verify(clientRepository, times(1)).load(any());
     }
 
     @Test public void notGivenProductThenSuggestionServiceSuggestEquivalentMethodShouldBeCastOnce() {
         product.markAsRemoved();
-        Mockito.when(suggestionService.suggestEquivalent(any(), any())).thenReturn(new Product(Id.generate(),product.getPrice(),product.getName(),product.getProductType()));
+        Mockito.when(suggestionService.suggestEquivalent(any(), any()))
+               .thenReturn(new Product(Id.generate(), product.getPrice(), product.getName(), product.getProductType()));
         addProductCommandHandler.handle(addProductCommand);
-        Mockito.verify(suggestionService,times(1)).suggestEquivalent(any(),any());
+        Mockito.verify(suggestionService, times(1)).suggestEquivalent(any(), any());
     }
-
 
 }
