@@ -20,6 +20,8 @@ private String name;
 		return true;//TODO explore domain rules ex: credit limit
 	}
 
+
+
 	/**
 	 * Sample model: one aggregate creates another.<br>
 	 * Client model does not compose Payment - therefore it does not manage Payment lifecycle.<br>
