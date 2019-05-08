@@ -3,10 +3,12 @@ package pl.com.bottega.ecommerce.sales.application.api.handler;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.internal.configuration.MockAnnotationProcessor;
+import org.mockito.stubbing.Answer;
 import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.ClientData;
 import pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.Id;
 import pl.com.bottega.ecommerce.sales.application.api.command.AddProductCommand;
@@ -19,6 +21,7 @@ import pl.com.bottega.ecommerce.sales.domain.productscatalog.ProductType;
 import pl.com.bottega.ecommerce.sales.domain.reservation.Reservation;
 import pl.com.bottega.ecommerce.sales.domain.reservation.ReservationRepository;
 import pl.com.bottega.ecommerce.sharedkernel.Money;
+import pl.com.bottega.ecommerce.sharedkernel.exceptions.DomainOperationException.DomainOperationException;
 import pl.com.bottega.ecommerce.system.application.SystemContext;
 
 import javax.xml.crypto.Data;
@@ -38,15 +41,17 @@ public class AddProductCommandHandlerTest {
     @Mock private SuggestionService suggestionService;
 
     @Mock private ClientRepository clientRepository;
-    @Mock private SystemContext systemContext;
+    private SystemContext systemContext;
     @Mock private AddProductCommandHandler addProductCommandHandler;
 
+    private Product product;
     private AddProductCommand addProductCommand;
     private Reservation reservation;
 
     @Before public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
+        systemContext = new SystemContext();
         addProductCommandHandler = new AddProductCommandHandler(reservationRepository, productRepository, suggestionService,
                 clientRepository, systemContext);
 
@@ -54,7 +59,7 @@ public class AddProductCommandHandlerTest {
         ClientData clientData = new ClientData(Id.generate(), "AAA");
         Reservation reservation = new Reservation(addProductCommand.getOrderId(), Reservation.ReservationStatus.OPENED, clientData,
                 new Date());
-        Product product = new Product(addProductCommand.getProductId(), new Money(new BigDecimal(100), Money.DEFAULT_CURRENCY), "Wazon",
+        product = new Product(addProductCommand.getProductId(), new Money(new BigDecimal(100), Money.DEFAULT_CURRENCY), "Wazon",
                 ProductType.STANDARD);
 
         Mockito.when(reservationRepository.load(any())).thenReturn(reservation);
@@ -65,10 +70,14 @@ public class AddProductCommandHandlerTest {
     }
 
     @Test public void givenProductThenClientRepositoryLoadMethodShouldNotBeCast() {
+        addProductCommandHandler.handle(addProductCommand);
         Mockito.verify(clientRepository,times(0)).load(any());
     }
 
     @Test public void givenProductThenSuggestionServiceSuggestEquivalentShouldNotBeCast() {
+        addProductCommandHandler.handle(addProductCommand);
         Mockito.verify(suggestionService,times(0)).suggestEquivalent(any(),any());
     }
+
+
 }
