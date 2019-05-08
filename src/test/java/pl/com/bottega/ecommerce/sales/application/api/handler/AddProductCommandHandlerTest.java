@@ -64,7 +64,11 @@ public class AddProductCommandHandlerTest {
         Mockito.doNothing().when(reservationRepository).save(any());
     }
 
-    @Test public void givenProductThenLoadClientRepositoryLoadMethodShouldNotBeCast() {
+    @Test public void givenProductThenClientRepositoryLoadMethodShouldNotBeCast() {
         Mockito.verify(clientRepository,times(0)).load(any());
+    }
+
+    @Test public void givenProductThenSuggestionServiceSuggestEquivalentShouldNotBeCast() {
+        Mockito.verify(suggestionService,times(0)).suggestEquivalent(any(),any());
     }
 }
