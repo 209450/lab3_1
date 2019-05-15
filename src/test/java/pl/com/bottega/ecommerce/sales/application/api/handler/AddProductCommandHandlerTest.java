@@ -42,7 +42,7 @@ public class AddProductCommandHandlerTest {
 
     @Mock private ClientRepository clientRepository;
     private SystemContext systemContext;
-    @Mock private AddProductCommandHandler addProductCommandHandler;
+    private AddProductCommandHandler addProductCommandHandler;
 
     private Product product;
     private AddProductCommand addProductCommand;
